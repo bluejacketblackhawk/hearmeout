@@ -38,6 +38,30 @@ h1 { font-size: 24px; margin-bottom: 8px; }
 }
 #model-fill { height: 100%; width: 0%; background: var(--accent); transition: width 300ms ease; }
 
+#perms {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 16px 4px;
+}
+#perms-intro { margin-bottom: 4px; }
+.perm-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+}
+.perm-row + .perm-row { border-top: 1px solid var(--line); }
+.perm-dot {
+  flex: none;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.perm-dot.ready { background: var(--ok); animation: none; }
+.perm-name { flex: 1; }
+.perm-row button { padding: 4px 12px; }
+
 #steps {
   display: flex;
   flex-direction: column;

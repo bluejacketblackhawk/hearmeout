@@ -28,6 +28,16 @@ One JSON object per line, UTF-8, `\n` terminated, both directions.
 | `foreground` | `exe, title` | focused window info |
 | `log` | `msg` | helper-internal warning; never contains keystrokes or clipboard content |
 
+### macOS additions
+
+| | fields | meaning |
+|---|---|---|
+| cmd `perms` | `prompt?: false \| true \| "input" \| "ax"` | re-check TCC grants and reply with a `perms` event; a truthy prompt raises the system permission dialogs for what is missing (`true` = all of it) |
+| evt `perms` | `input, ax: "granted" \| "denied" \| "unknown"` | Input Monitoring / Accessibility status; emitted after `ready`, on change (2 s watch), and per `perms` command |
+
+The Windows helper ignores `perms` and never emits it (unknown commands are
+dropped on purpose, so the app may speak mac to either twin safely).
+
 Rules the helper must keep forever:
 
 1. Only watched VKs are ever reported. No buffering, no logging, no other keys.

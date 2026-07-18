@@ -30,8 +30,8 @@
     "start": "electron .",
     "smoke": "electron . --smoke",
     "setup": "node scripts/setup.js",
-    "dist:dir": "electron-builder --dir",
-    "dist": "electron-builder",
+    "dist:dir": "node scripts/dist-deps.js && electron-builder --dir",
+    "dist": "node scripts/dist-deps.js && electron-builder",
     "test": "node test/chunker-test.js && node test/wav-test.js && node test/hotkey-match-test.js && node test/settings-check.js",
     "test:engine": "node test/engine-smoke.js",
     "test:helper": "node test/helper-selftest.js"
@@ -39,6 +39,7 @@
   "build": {
     "appId": "app.hearmeout.reader",
     "productName": "Hear Me Out",
+    "afterPack": "scripts/mac-prune-foreign-arch.js",
     "directories": {
       "output": "dist"
     },

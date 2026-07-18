@@ -159,6 +159,10 @@ async function boot() {
     helper.on('unavailable', function () {
       log.error('hotkey unavailable — helper kept crashing');
     });
+    // macOS: the welcome screen watches TCC grants flip live.
+    helper.on('perms', function (p) {
+      windows.sendToWelcome('perms:changed', p);
+    });
     log.info('helper: up, hotkey ' + (currentHotkey().name || 'F8'));
   } catch (e) {
     log.error('helper failed to start — hotkey disabled, reader still works', e);

@@ -21,6 +21,7 @@ ipcMain.handle('settings:get', function () {
 ipcMain.handle('voices:list', function () { return []; });
 ipcMain.handle('model:info', function () { return { ready: true, cache: { cacheDir: 'bundled', warm: true } }; });
 ipcMain.handle('app:version', function () { return '0.1.0'; });
+ipcMain.handle('perms:get', function () { return null; }); // shots stay platform-neutral
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'assets', 'screenshots');

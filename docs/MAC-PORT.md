@@ -1,5 +1,11 @@
 # macOS Port
 
+Shipped: `native/HearMeOutHelper.swift` + `native/build-mac.sh` (universal
+binary), mac paths in `config.js`/`setup.js`, the welcome permissions flow
+(`perms` over the protocol, see CONTRACTS.md), `assets/HearMeOut.icns`, and
+the dmg+zip lanes for arm64 + x64. The notes below are kept as the port's
+design record.
+
 The core (engine, session, chunker, windows, renderers, settings) is already
 portable — no Win32 outside `native/` and `src/main/config.js`. The port is
 one Swift helper plus packaging.

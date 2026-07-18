@@ -11,14 +11,20 @@ subscription, no telemetry. Turn Wi-Fi off — everything still works.
 
 ## Download
 
-Grab the latest Windows installer or portable zip from
-[**Releases**](https://github.com/bluejacketblackhawk/hearmeout/releases/latest).
-macOS is next — the core is built portable and the port is tracked in
-[docs/MAC-PORT.md](docs/MAC-PORT.md).
+Grab the latest build from
+[**Releases**](https://github.com/bluejacketblackhawk/hearmeout/releases/latest):
+Windows installer or portable zip, macOS `.dmg` or `.zip` (Apple Silicon
+and Intel).
 
-> Windows will warn about an unsigned installer (code-signing certificates
-> cost money this project doesn't charge for). Click "More info" → "Run
-> anyway", or use the portable zip.
+> Both platforms will warn about unsigned builds (code-signing certificates
+> cost money this project doesn't charge for). Windows: click "More info" →
+> "Run anyway". macOS: if Gatekeeper balks, clear the quarantine flag once —
+> `xattr -dr com.apple.quarantine "/Applications/Hear Me Out.app"`.
+
+On macOS the welcome screen walks you through the two permissions the gesture
+needs: Input Monitoring (hear the hotkey) and Accessibility (grab the
+selection). On a Mac laptop keyboard the default hotkey is `Fn`+`F8` — or
+rebind it to anything in Settings.
 
 ## What it does
 
@@ -56,10 +62,11 @@ more of: give it to someone who can't pay.
   (Apache-2.0), quantized, running locally via ONNX. The model downloads once
   (~90 MB) — it ships inside the installer, so usually there is nothing to
   download at all.
-- **Selection grab**: a tiny native helper (C#, compiled by the compiler that
-  ships inside Windows) watches only your chosen hotkey, copies the selection,
-  and restores your clipboard. It never sees any other keystroke — the source
-  is ~800 lines, read it.
+- **Selection grab**: a tiny native helper (C# on Windows, Swift on macOS —
+  each compiled by tools the OS already has) watches only your chosen hotkey
+  and fetches the selection. On macOS it asks the Accessibility API outright
+  and only falls back to a copy; either way your clipboard is put back. It
+  never sees any other keystroke — the source is small, read it.
 - **Player**: Electron, one `<audio>` element, sentence-by-sentence streaming
   so long documents start speaking in about a second.
 - **The airplane-mode test**: after install, disable networking. Every feature
@@ -73,7 +80,8 @@ more of: give it to someone who can't pay.
 
 ## Build from source
 
-Needs Node 24+ on Windows 10/11.
+Needs Node 24+ — on Windows 10/11 that's everything; on macOS 11+ add the
+Xcode Command Line Tools (`xcode-select --install`) for the Swift helper.
 
 ```
 git clone https://github.com/bluejacketblackhawk/hearmeout.git
@@ -97,8 +105,7 @@ it speak end-to-end, `npm run dist` builds the installer.
 
 ## Roadmap
 
-- macOS build (Apple Silicon + Intel) — the helper has a Swift twin planned,
-  everything else is already portable
+- Signed + notarized macOS builds (today: unsigned, clear quarantine once)
 - EPUB and PDF import in the reader
 - Word-level highlight (currently sentence-level)
 - MP3/M4B export, chapter files

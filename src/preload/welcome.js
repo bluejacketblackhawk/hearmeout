@@ -9,8 +9,11 @@ function on(channel, cb) {
 contextBridge.exposeInMainWorld('hmo', {
   onModelProgress: function (cb) { on('model:progress', cb); },
   onModelReady: function (cb) { on('model:ready', cb); },
+  onPerms: function (cb) { on('perms:changed', cb); },
 
   modelInfo: function () { return ipcRenderer.invoke('model:info'); },
+  perms: function () { return ipcRenderer.invoke('perms:get'); },
+  permsGrant: function (which) { return ipcRenderer.invoke('perms:grant', which); },
   sample: function (voiceId) { return ipcRenderer.invoke('tts:sample', voiceId); },
   getSettings: function () { return ipcRenderer.invoke('settings:get'); },
   done: function () { return ipcRenderer.invoke('welcome:done'); },

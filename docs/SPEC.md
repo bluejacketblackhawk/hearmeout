@@ -73,9 +73,10 @@ time at ~170 wpm.
 
 ## Platforms
 
-Windows 10/11 x64 first (this repo, shipped). macOS Apple Silicon + Intel
-next: docs/MAC-PORT.md — the Swift helper twin is the only real work; the
-core is dependency-portable (no Win32 outside the helper + config paths).
+Windows 10/11 x64 (shipped) and macOS 11+ Apple Silicon + Intel (shipped:
+docs/MAC-PORT.md). One core, two native helper twins — C# behind
+`WH_KEYBOARD_LL` on Windows, Swift behind a CGEvent tap + the Accessibility
+API on macOS — speaking the same protocol (docs/CONTRACTS.md).
 
 ## Pricing displaced
 

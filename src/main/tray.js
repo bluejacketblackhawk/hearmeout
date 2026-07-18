@@ -27,7 +27,7 @@ function create(h) {
     { type: 'separator' },
     { label: 'Settings', click: function () { h.onOpenSettings(); } },
     {
-      label: 'Start with Windows',
+      label: process.platform === 'darwin' ? 'Start at login' : 'Start with Windows',
       type: 'checkbox',
       checked: !!h.getLogin(),
       click: function (item) { h.setLogin(!!item.checked); },

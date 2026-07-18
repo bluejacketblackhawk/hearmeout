@@ -14,6 +14,7 @@
  *   'key'         {vk, down, held} — a watched VK went down/up
  *   'captured'    {vk, name, mods} — rebind capture result
  *   'foreground'  {exe, title}    — mirror of a foreground() reply
+ *   'perms'       {input, ax}     — macOS TCC grant status changed (darwin only)
  *   'log'         msg             — helper-internal warning (never keystrokes)
  *   'crash'       {code, signal}  — helper process exited unexpectedly
  *   'unavailable' {restarts}      — gave up after MAX_RAPID_RESTARTS; hotkey dead
@@ -26,6 +27,7 @@
  *   grabSelection(timeoutMs) -> Promise<{ok, text, err}>  copy the current selection
  *   foreground()           -> Promise<{exe, title}>
  *   ping()                 -> Promise<boolean>
+ *   perms(prompt)          -> Promise<{input, ax}>  darwin only; see CONTRACTS.md
  */
 
 const { EventEmitter } = require('events');
@@ -42,6 +44,7 @@ const READY_TIMEOUT_MS = 15000;
 const PING_TIMEOUT_MS = 2000;
 const GRAB_TIMEOUT_PAD_MS = 2000;
 const FOREGROUND_TIMEOUT_MS = 2000;
+const PERMS_TIMEOUT_MS = 3000;
 
 const BACKOFF_BASE_MS = 250;
 const BACKOFF_MAX_MS = 8000;
@@ -66,6 +69,8 @@ class Helper extends EventEmitter {
     this._pingQ = [];
     this._grabQ = [];
     this._fgQ = [];
+    this._permsQ = [];
+    this.lastPerms = null; // most recent perms event (darwin only)
 
     this._onReadyOnce = null;
   }
@@ -288,6 +293,13 @@ class Helper extends EventEmitter {
         this.emit('foreground', info);
         break;
       }
+      case 'perms': {
+        const p = { input: String(obj.input || ''), ax: String(obj.ax || '') };
+        this.lastPerms = p;
+        this._resolveNext(this._permsQ, p);
+        this.emit('perms', p);
+        break;
+      }
       case 'log':
         if (obj.msg != null) {
           log.warn('helper: ' + obj.msg);
@@ -347,6 +359,17 @@ class Helper extends EventEmitter {
       .then(function () { return true; });
   }
 
+  /**
+   * macOS TCC grant status. Resolves {input, ax} ('granted'/'denied'/'unknown').
+   * prompt: 'input' | 'ax' | true raises the system permission dialogs for
+   * whatever is missing. Any perms event doubles as a valid reply (the helper
+   * also pushes them unsolicited on change), so resolution can precede the
+   * dialog — callers re-check. Darwin only; the Windows helper never answers.
+   */
+  perms(prompt) {
+    return this._request(this._permsQ, { cmd: 'perms', prompt: prompt || false }, PERMS_TIMEOUT_MS);
+  }
+
   // ---- plumbing -------------------------------------------------------
 
   _send(obj) {
@@ -388,7 +411,7 @@ class Helper extends EventEmitter {
   }
 
   _rejectAll(err) {
-    const queues = [this._pingQ, this._grabQ, this._fgQ];
+    const queues = [this._pingQ, this._grabQ, this._fgQ, this._permsQ];
     for (let q = 0; q < queues.length; q++) {
       const queue = queues[q];
       while (queue.length) {

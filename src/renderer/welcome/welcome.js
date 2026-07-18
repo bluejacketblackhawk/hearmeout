@@ -37,6 +37,40 @@
     if (s.hotkey && s.hotkey.name) hotkeyEl.textContent = s.hotkey.name;
   });
 
+  // macOS permissions card. Stays hidden on Windows (perms() resolves null)
+  // and on a mac that already granted both; once shown it sticks around so
+  // the dots can turn green under the user's eyes.
+  const permsCard = document.getElementById('perms');
+  const permEls = {
+    input: { dot: document.getElementById('perm-input-dot'), btn: document.getElementById('perm-input-btn') },
+    ax: { dot: document.getElementById('perm-ax-dot'), btn: document.getElementById('perm-ax-btn') },
+  };
+
+  function renderPerms(p) {
+    if (!p || !p.input) return;
+    const allGranted = (p.input === 'granted' && p.ax === 'granted');
+    if (permsCard.hidden && !allGranted) permsCard.hidden = false;
+    const keys = ['input', 'ax'];
+    for (let i = 0; i < keys.length; i++) {
+      const ok = (p[keys[i]] === 'granted');
+      permEls[keys[i]].dot.classList.toggle('ready', ok);
+      permEls[keys[i]].btn.hidden = ok;
+    }
+  }
+
+  function wireGrant(which) {
+    permEls[which].btn.addEventListener('click', async function () {
+      permEls[which].btn.disabled = true;
+      try { renderPerms(await window.hmo.permsGrant(which)); } catch (e) { /* helper down */ }
+      permEls[which].btn.disabled = false;
+    });
+  }
+  wireGrant('input');
+  wireGrant('ax');
+
+  window.hmo.perms().then(renderPerms, function () { /* no perms channel here */ });
+  window.hmo.onPerms(renderPerms);
+
   btnTry.addEventListener('click', async function () {
     btnTry.disabled = true;
     try {

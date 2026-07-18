@@ -15,24 +15,22 @@ const { execFile } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const IS_MAC = process.platform === 'darwin';
 const ROOT = path.resolve(__dirname, '..');
-const BUILD = path.join(ROOT, 'native', process.platform === 'darwin' ? 'build-mac.sh' : 'build.cmd');
-const HELPER = path.join(ROOT, 'bin', 'helper', 'HearMeOutHelper.exe');
+const BUILD = path.join(ROOT, 'native', IS_MAC ? 'build-mac.sh' : 'build.cmd');
+const HELPER = path.join(ROOT, 'bin', 'helper', IS_MAC ? 'HearMeOutHelper' : 'HearMeOutHelper.exe');
 
 function compileHelper() {
   return new Promise(function (resolve, reject) {
-    if (process.platform === 'darwin') {
-      console.log('[setup] macOS helper build comes with the mac port (docs/MAC-PORT.md) — skipping');
-      resolve();
-      return;
-    }
     if (fs.existsSync(HELPER)) {
       console.log('[setup] helper already built');
       resolve();
       return;
     }
-    console.log('[setup] compiling native helper (csc)…');
-    execFile(process.env.ComSpec || 'cmd.exe', ['/c', BUILD], { cwd: path.dirname(BUILD) },
+    console.log('[setup] compiling native helper (' + (IS_MAC ? 'swiftc' : 'csc') + ')…');
+    const runner = IS_MAC ? '/bin/bash' : (process.env.ComSpec || 'cmd.exe');
+    const argv = IS_MAC ? [BUILD] : ['/c', BUILD];
+    execFile(runner, argv, { cwd: path.dirname(BUILD) },
       function (err, stdout, stderr) {
         if (err) {
           reject(new Error('helper compile failed: ' + ((stderr || stdout || err.message) + '').trim()));

@@ -138,7 +138,8 @@ function welcome() {
   if (_wins.welcome && !_wins.welcome.isDestroyed()) { _wins.welcome.show(); return _wins.welcome; }
   const w = new BrowserWindow(base('welcome.js', {
     width: 600,
-    height: 560,
+    // The darwin extra fits the permissions card; Windows never shows it.
+    height: process.platform === 'darwin' ? 680 : 560,
     resizable: false,
     maximizable: false,
     title: 'Welcome to Hear Me Out',

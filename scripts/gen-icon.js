@@ -3,17 +3,25 @@
 /**
  * Generate every icon from one canvas drawing. Runs under Electron
  * (npx electron scripts/gen-icon.js) so there are zero image dependencies:
- *   assets/HearMeOut.png  256px app icon
- *   assets/HearMeOut.ico  multi-size (256/128/64/48/32/16, PNG-compressed)
- *   assets/tray.png       32px tray glyph (transparent)
+ *   assets/HearMeOut.png   256px app icon        (Windows run)
+ *   assets/HearMeOut.ico   multi-size, PNG-compressed (Windows run)
+ *   assets/tray.png        32px tray glyph       (Windows run)
+ *   assets/HearMeOut.icns  16..1024 via iconutil (macOS run)
+ *
+ * Each platform writes only its own artifacts: canvas antialiasing differs
+ * across platforms, and regenerating the other side's binaries would churn
+ * them for no visual gain.
  *
  * The mark: a rounded amber square with three white sound arcs — ")))" —
  * the same mark the UI wears as text.
  */
 
 const { app, BrowserWindow, nativeImage } = require('electron');
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+
+const IS_MAC = process.platform === 'darwin';
 
 const ASSETS = path.join(__dirname, '..', 'assets');
 
@@ -50,7 +58,7 @@ const DRAW = `
     }
     return c.toDataURL('image/png');
   }
-  return { icon: draw(256, false), tray: draw(64, true) };
+  return { icon: draw(256, false), icon1024: draw(1024, false), tray: draw(64, true) };
 })();
 `;
 
@@ -86,12 +94,41 @@ function writeIco(pngBySize, outPath) {
   fs.writeFileSync(outPath, Buffer.concat([header].concat(entries).concat(blobs)));
 }
 
+// The mark drawn at 1024, folded down through every slot Finder reads.
+function writeIcns(res) {
+  const master = nativeImage.createFromDataURL(res.icon1024);
+  const iconset = path.join(ASSETS, 'HearMeOut.iconset');
+  fs.rmSync(iconset, { recursive: true, force: true });
+  fs.mkdirSync(iconset, { recursive: true });
+  const slots = [
+    [16, 'icon_16x16.png'], [32, 'icon_16x16@2x.png'],
+    [32, 'icon_32x32.png'], [64, 'icon_32x32@2x.png'],
+    [128, 'icon_128x128.png'], [256, 'icon_128x128@2x.png'],
+    [256, 'icon_256x256.png'], [512, 'icon_256x256@2x.png'],
+    [512, 'icon_512x512.png'], [1024, 'icon_512x512@2x.png'],
+  ];
+  for (let i = 0; i < slots.length; i++) {
+    const px = slots[i][0];
+    const img = (px === 1024) ? master : master.resize({ width: px, height: px });
+    fs.writeFileSync(path.join(iconset, slots[i][1]), img.toPNG());
+  }
+  execFileSync('iconutil', ['-c', 'icns', iconset, '-o', path.join(ASSETS, 'HearMeOut.icns')]);
+  fs.rmSync(iconset, { recursive: true, force: true });
+}
+
 app.whenReady().then(async function () {
   const w = new BrowserWindow({ show: false, webPreferences: { offscreen: true } });
   await w.loadURL('data:text/html,<html><body></body></html>');
   const res = await w.webContents.executeJavaScript(DRAW);
 
   fs.mkdirSync(ASSETS, { recursive: true });
+
+  if (IS_MAC) {
+    writeIcns(res);
+    console.log('[gen-icon] wrote HearMeOut.icns');
+    app.exit(0);
+    return;
+  }
 
   const icon256 = nativeImage.createFromDataURL(res.icon);
   fs.writeFileSync(path.join(ASSETS, 'HearMeOut.png'), icon256.toPNG());

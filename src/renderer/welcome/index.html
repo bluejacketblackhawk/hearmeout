@@ -22,6 +22,20 @@
     <div id="model-bar" hidden><div id="model-fill"></div></div>
   </div>
 
+  <div id="perms" hidden>
+    <p class="dim small" id="perms-intro">macOS asks your okay for two things. Both live in System Settings → Privacy &amp; Security.</p>
+    <div class="perm-row">
+      <span class="perm-dot" id="perm-input-dot"></span>
+      <span class="perm-name"><b>Input Monitoring</b> <span class="dim">— hear your hotkey in any app</span></span>
+      <button class="small" id="perm-input-btn">Grant…</button>
+    </div>
+    <div class="perm-row">
+      <span class="perm-dot" id="perm-ax-dot"></span>
+      <span class="perm-name"><b>Accessibility</b> <span class="dim">— grab the text you select</span></span>
+      <button class="small" id="perm-ax-btn">Grant…</button>
+    </div>
+  </div>
+
   <ol id="steps">
     <li><b>Select</b> some text — an article, an email, a PDF in your browser.</li>
     <li>Press <span class="kbd" id="hotkey">F8</span></li>

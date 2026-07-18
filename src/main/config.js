@@ -21,7 +21,10 @@ function resourcesRoot() {
   return REPO_ROOT;
 }
 
-const BIN_HELPER = path.join(resourcesRoot(), 'bin', 'helper', 'HearMeOutHelper.exe');
+const BIN_HELPER = path.join(
+  resourcesRoot(), 'bin', 'helper',
+  process.platform === 'darwin' ? 'HearMeOutHelper' : 'HearMeOutHelper.exe'
+);
 const HELPER_BUILD = path.join(
   isPackaged() ? path.join(process.resourcesPath, 'native') : path.join(REPO_ROOT, 'native'),
   process.platform === 'darwin' ? 'build-mac.sh' : 'build.cmd'

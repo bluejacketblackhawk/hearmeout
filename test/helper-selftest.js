@@ -1,6 +1,6 @@
 'use strict';
 
-// Helper selftest: spawn the real HearMeOutHelper.exe, verify ready + ping +
+// Helper selftest: spawn the real native helper, verify ready + ping +
 // watch + a selection grab against our own clipboard. The grab path is tested
 // honestly: we put a known string on the clipboard, ask for a grab with no
 // selection anywhere (expect no-selection AND the clipboard restored).
@@ -8,9 +8,21 @@
 
 const helper = require('../src/main/helper');
 
+const IS_MAC = process.platform === 'darwin';
+
 function fail(msg) {
   console.error('[helper-selftest] FAIL: ' + msg);
   process.exit(1);
+}
+
+function setClipboard(cp, text) {
+  if (IS_MAC) cp.execSync('pbcopy', { input: text });
+  else cp.execSync('powershell -NoProfile -Command "Set-Clipboard -Value \'' + text + '\'"');
+}
+
+function getClipboard(cp) {
+  if (IS_MAC) return cp.execSync('pbpaste').toString().trim();
+  return cp.execSync('powershell -NoProfile -Command "Get-Clipboard"').toString().trim();
 }
 
 async function main() {
@@ -29,7 +41,7 @@ async function main() {
   // and expect our sentinel clipboard text to survive the round trip.
   const sentinel = 'hearmeout-selftest-' + Date.now();
   const cp = require('child_process');
-  cp.execSync('powershell -NoProfile -Command "Set-Clipboard -Value \'' + sentinel + '\'"');
+  setClipboard(cp, sentinel);
 
   const res = await helper.grabSelection(500);
   if (res.ok) {
@@ -42,7 +54,7 @@ async function main() {
     console.log('[helper-selftest] grab: no-selection (expected)');
   }
 
-  const back = cp.execSync('powershell -NoProfile -Command "Get-Clipboard"').toString().trim();
+  const back = getClipboard(cp);
   if (back !== sentinel) fail('clipboard not restored: got "' + back + '"');
   console.log('[helper-selftest] clipboard restored intact');
 

@@ -165,6 +165,30 @@ function register(mainApi) {
     return true;
   });
 
+  // ---- macOS permissions (welcome flow) ------------------------------
+
+  const SETTINGS_PANE = {
+    input: 'x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent',
+    ax: 'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility',
+  };
+
+  // null on Windows: the welcome screen keeps the permissions card hidden.
+  ipcMain.handle('perms:get', function () {
+    if (process.platform !== 'darwin') return null;
+    return helper.perms(false).catch(function () { return helper.lastPerms; });
+  });
+
+  // Raise the system dialog for one permission; when nothing can appear any
+  // more (already asked and denied), take the user to the exact pane instead.
+  ipcMain.handle('perms:grant', async function (e, which) {
+    if (process.platform !== 'darwin') return null;
+    const w = (which === 'ax') ? 'ax' : 'input';
+    let p = null;
+    try { p = await helper.perms(w); } catch (err) { p = helper.lastPerms; }
+    if (!p || p[w] !== 'granted') shell.openExternal(SETTINGS_PANE[w]);
+    return p;
+  });
+
   // ---- navigation / misc ---------------------------------------------
 
   ipcMain.handle('open:reader', function () { windows.reader(); return true; });
