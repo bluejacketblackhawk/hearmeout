@@ -1,0 +1,103 @@
+{
+  "name": "hearmeout",
+  "productName": "Hear Me Out",
+  "version": "0.1.0",
+  "description": "Select text anywhere, press a key, and hear it read aloud in a real human voice. Runs entirely on your machine — no cloud, no account, no subscription.",
+  "license": "MIT",
+  "author": "bluejacketblackhawk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluejacketblackhawk/hearmeout.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bluejacketblackhawk/hearmeout/issues"
+  },
+  "homepage": "https://github.com/bluejacketblackhawk/hearmeout#readme",
+  "main": "src/main/main.js",
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "src",
+    "native",
+    "scripts",
+    "assets",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron . --smoke",
+    "setup": "node scripts/setup.js",
+    "dist:dir": "electron-builder --dir",
+    "dist": "electron-builder",
+    "test": "node test/chunker-test.js && node test/wav-test.js && node test/hotkey-match-test.js && node test/settings-check.js",
+    "test:engine": "node test/engine-smoke.js",
+    "test:helper": "node test/helper-selftest.js"
+  },
+  "build": {
+    "appId": "app.hearmeout.reader",
+    "productName": "Hear Me Out",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "native/**/*",
+      "docs/**/*",
+      "package.json",
+      "node_modules/**/*",
+      "!node_modules/onnxruntime-node/bin/**/linux/**",
+      "!node_modules/onnxruntime-node/bin/**/darwin/**",
+      "!node_modules/onnxruntime-node/bin/**/arm64/**",
+      "!node_modules/onnxruntime-web/dist/*.wasm",
+      "!node_modules/onnxruntime-web/dist/ort.all*",
+      "!node_modules/onnxruntime-web/dist/ort.webgpu*",
+      "!node_modules/onnxruntime-web/dist/ort.webgl*",
+      "!node_modules/onnxruntime-web/dist/ort.training*",
+      "!node_modules/**/*.map",
+      "!node_modules/**/{README,README.md,CHANGELOG.md,readme.md}"
+    ],
+    "electronLanguages": ["en-US"],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin"
+      },
+      {
+        "from": "build-resources/models",
+        "to": "models"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/HearMeOut.ico",
+      "artifactName": "HearMeOut-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Hear Me Out"
+    },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["arm64", "x64"] },
+        { "target": "zip", "arch": ["arm64", "x64"] }
+      ],
+      "icon": "assets/HearMeOut.icns",
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": true,
+      "artifactName": "HearMeOut-${version}-${arch}.${ext}"
+    }
+  },
+  "dependencies": {
+    "kokoro-js": "^1.2.1"
+  },
+  "devDependencies": {
+    "electron": "^43.1.0",
+    "electron-builder": "^25.1.8"
+  }
+}

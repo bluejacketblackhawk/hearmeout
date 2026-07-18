@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; media-src blob:; img-src 'self' data:;">
+  <link rel="stylesheet" href="../shared/theme.css">
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+  <div id="hero">
+    <div id="mark">)))</div>
+    <h1>Hear Me Out</h1>
+    <p class="dim">Select text anywhere. Press a key. Hear it in a real voice.<br>
+    All of it on your machine — no cloud, no account, no subscription.</p>
+  </div>
+
+  <div id="model">
+    <div id="model-status">
+      <span id="model-dot"></span>
+      <span id="model-text">Waking the voice up…</span>
+    </div>
+    <div id="model-bar" hidden><div id="model-fill"></div></div>
+  </div>
+
+  <ol id="steps">
+    <li><b>Select</b> some text — an article, an email, a PDF in your browser.</li>
+    <li>Press <span class="kbd" id="hotkey">F8</span></li>
+    <li><b>Listen.</b> Press it again (or Esc) to stop.</li>
+  </ol>
+
+  <div id="actions">
+    <button id="try" class="primary" disabled>Hear a sample</button>
+    <button id="reader">Open the reader</button>
+    <button id="start" class="ghost">Start listening →</button>
+  </div>
+
+  <audio id="audio"></audio>
+  <script src="welcome.js"></script>
+</body>
+</html>

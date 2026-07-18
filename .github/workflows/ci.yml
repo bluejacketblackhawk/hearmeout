@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - name: unit tests (no model needed)
+        run: npm test
+      - name: compile native helper
+        run: cmd /c native\build.cmd
+      - name: helper binary exists
+        run: if (-not (Test-Path bin\helper\HearMeOutHelper.exe)) { exit 1 }
+        shell: pwsh

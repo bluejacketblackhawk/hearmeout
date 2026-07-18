@@ -1,0 +1,107 @@
+html, body { height: 100%; }
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+
+#brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+#brand-mark {
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: -2px;
+}
+#brand-name { font-weight: 600; }
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#voice { max-width: 200px; }
+
+main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  padding: 14px 16px;
+}
+
+#input {
+  flex: 1;
+  width: 100%;
+  resize: none;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  outline: none;
+  user-select: text;
+}
+#input:focus { border-color: var(--text-dim); }
+
+/* Follow-along view shown while listening: the same text as sentence spans. */
+#follow {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 15px;
+  line-height: 1.7;
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  white-space: pre-wrap;
+  user-select: text;
+}
+#follow .sent { border-radius: 4px; transition: background 150ms ease; }
+#follow .sent.active {
+  background: color-mix(in srgb, var(--accent) 26%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 26%, transparent);
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-top: 1px solid var(--line);
+  flex: 0 0 auto;
+  min-height: 34px;
+}
+
+#drop-hint[hidden] { display: none; }
+
+#drop-hint {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  border: 3px dashed var(--accent);
+  border-radius: var(--radius);
+  pointer-events: none;
+}

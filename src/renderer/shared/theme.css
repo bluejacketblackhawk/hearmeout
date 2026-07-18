@@ -1,0 +1,83 @@
+/* Hear Me Out — shared look. Dark by default, honest in light mode too. */
+
+:root {
+  --bg: #101214;
+  --bg-raised: #17191c;
+  --bg-inset: #0b0c0e;
+  --text: #e8e6e1;
+  --text-dim: #9a978f;
+  --accent: #f2b134;        /* the voice: warm amber */
+  --accent-ink: #1a1405;
+  --line: #26292d;
+  --danger: #e0564f;
+  --ok: #58b368;
+  --radius: 10px;
+  --font: -apple-system, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --mono: "Cascadia Code", Consolas, ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #faf8f4;
+    --bg-raised: #ffffff;
+    --bg-inset: #f0ede7;
+    --text: #23211d;
+    --text-dim: #6f6c64;
+    --accent: #b97e0a;
+    --accent-ink: #fff8ea;
+    --line: #e2ded6;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.45;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 7px 14px;
+  cursor: pointer;
+}
+button:hover { border-color: var(--text-dim); }
+button:active { transform: translateY(1px); }
+button.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: transparent;
+  font-weight: 600;
+}
+button.primary:hover { filter: brightness(1.06); }
+button.ghost { background: transparent; border-color: transparent; color: var(--text-dim); }
+button.ghost:hover { color: var(--text); border-color: transparent; }
+button:disabled { opacity: 0.45; cursor: default; transform: none; }
+
+select, input[type="text"] {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+input[type="range"] { accent-color: var(--accent); }
+input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
+
+.dim { color: var(--text-dim); }
+.small { font-size: 12px; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+::-webkit-scrollbar-track { background: transparent; }

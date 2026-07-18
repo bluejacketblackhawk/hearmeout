@@ -1,0 +1,65 @@
+body {
+  padding: 34px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  height: 100vh;
+}
+
+#hero { text-align: center; }
+#mark {
+  color: var(--accent);
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -5px;
+  margin-bottom: 4px;
+}
+h1 { font-size: 24px; margin-bottom: 8px; }
+
+#model {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+#model-status { display: flex; align-items: center; gap: 9px; }
+#model-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+#model-dot.ready { background: var(--ok); animation: none; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+#model-bar {
+  margin-top: 10px;
+  height: 4px; border-radius: 2px;
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+#model-fill { height: 100%; width: 0%; background: var(--accent); transition: width 300ms ease; }
+
+#steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 24px;
+  font-size: 15px;
+}
+
+.kbd {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 3px 10px;
+}
+
+#actions {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#start { margin-left: auto; }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; media-src blob:; img-src 'self' data:;">
+  <link rel="stylesheet" href="../shared/theme.css">
+  <link rel="stylesheet" href="player.css">
+</head>
+<body>
+  <div id="bar">
+    <div id="wave" title="Hear Me Out">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div id="mid">
+      <div id="source" class="dim small">Hear Me Out</div>
+      <div id="line">&nbsp;</div>
+      <div id="progress"><div id="progress-fill"></div></div>
+    </div>
+
+    <div id="controls">
+      <button id="prev" class="ghost" title="Previous sentence">&#9198;</button>
+      <button id="toggle" class="primary" title="Pause / resume">&#9654;</button>
+      <button id="next" class="ghost" title="Next sentence">&#9197;</button>
+      <button id="speed" class="ghost" title="Speed">1&times;</button>
+      <button id="close" class="ghost" title="Stop">&#10005;</button>
+    </div>
+  </div>
+
+  <audio id="audio"></audio>
+  <script src="player.js"></script>
+</body>
+</html>
