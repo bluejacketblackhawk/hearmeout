@@ -49,9 +49,6 @@
       "docs/**/*",
       "package.json",
       "node_modules/**/*",
-      "!node_modules/onnxruntime-node/bin/**/linux/**",
-      "!node_modules/onnxruntime-node/bin/**/darwin/**",
-      "!node_modules/onnxruntime-node/bin/**/arm64/**",
       "!node_modules/onnxruntime-web/dist/*.wasm",
       "!node_modules/onnxruntime-web/dist/ort.all*",
       "!node_modules/onnxruntime-web/dist/ort.webgpu*",
@@ -74,7 +71,12 @@
     "win": {
       "target": "nsis",
       "icon": "assets/HearMeOut.ico",
-      "artifactName": "HearMeOut-Setup-${version}.${ext}"
+      "artifactName": "HearMeOut-Setup-${version}.${ext}",
+      "files": [
+        "!node_modules/onnxruntime-node/bin/**/linux/**",
+        "!node_modules/onnxruntime-node/bin/**/darwin/**",
+        "!node_modules/onnxruntime-node/bin/**/arm64/**"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -90,7 +92,11 @@
       "icon": "assets/HearMeOut.icns",
       "category": "public.app-category.productivity",
       "hardenedRuntime": true,
-      "artifactName": "HearMeOut-${version}-${arch}.${ext}"
+      "artifactName": "HearMeOut-${version}-${arch}.${ext}",
+      "files": [
+        "!node_modules/onnxruntime-node/bin/**/linux/**",
+        "!node_modules/onnxruntime-node/bin/**/win32/**"
+      ]
     }
   },
   "dependencies": {

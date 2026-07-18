@@ -28,13 +28,16 @@ with deep links to System Settings panes.
 
 - `native/build-mac.sh`: `swiftc -O HearMeOutHelper.swift -o ../bin/helper/HearMeOutHelper`
 - electron-builder mac config already present in package.json (dmg + zip,
-  arm64 + x64). Generate `assets/HearMeOut.icns` from `HearMeOut.png`
-  (`iconutil`); hardened runtime on; notarize when the Apple ID is set up —
-  unsigned + `xattr -dr com.apple.quarantine` instructions otherwise, same
-  as cleanroom's release notes.
-- onnxruntime-node ships darwin binaries — remember to flip the
-  platform-exclude filters in package.json `build.files` for the mac lane
-  (exclude win/linux there instead).
+  arm64 + x64 — BOTH ship; "the iMacs/x64s" are first-class). Generate
+  `assets/HearMeOut.icns` from `HearMeOut.png` (`iconutil`); hardened runtime
+  on; notarize when the Apple ID is set up — unsigned +
+  `xattr -dr com.apple.quarantine` instructions otherwise, same as
+  cleanroom's release notes.
+- Packaging excludes are ALREADY platform-scoped on main: `build.win.files`
+  strips linux/darwin/arm64 onnxruntime binaries, `build.mac.files` strips
+  linux/win32. Do not re-add platform excludes to the base `build.files`.
+  Optional slimming: an afterPack hook may prune the non-target darwin arch
+  (`onnxruntime-node/bin/napi-v3/darwin/<other-arch>`) from each mac build.
 
 ## Order of work
 
@@ -42,4 +45,6 @@ with deep links to System Settings panes.
    already runs anywhere node does).
 2. `config.js` mac paths + `build-mac.sh`.
 3. Welcome perms flow.
-4. icns + dmg lane + smoke on both arches.
+4. icns + dmg lane + smoke on both arches. The x64 build must be smoked on
+   real Intel hardware when an iMac is available, otherwise under Rosetta 2
+   on Apple Silicon — either counts; skipping x64 verification does not.
