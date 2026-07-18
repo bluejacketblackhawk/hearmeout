@@ -36,9 +36,14 @@ with deep links to System Settings panes.
 - electron-builder mac config already present in package.json (dmg + zip,
   arm64 + x64 — BOTH ship; "the iMacs/x64s" are first-class). Generate
   `assets/HearMeOut.icns` from `HearMeOut.png` (`iconutil`); hardened runtime
-  on; notarize when the Apple ID is set up — unsigned +
-  `xattr -dr com.apple.quarantine` instructions otherwise, same as
-  cleanroom's release notes.
+  on.
+- Signing: `npm run dist` auto-discovers the Developer ID Application
+  identity (team 7Y39A984XL) and signs everything, helper included.
+  Notarization + stapling live in `scripts/notarize-mac.js` (afterSign),
+  gated on `APPLE_API_KEY` (path to the App Store Connect .p8),
+  `APPLE_API_KEY_ID`, `APPLE_API_ISSUER` — without them the hook steps aside
+  and the unsigned-era `xattr -dr com.apple.quarantine` instructions still
+  apply to what comes out.
 - Packaging excludes are ALREADY platform-scoped on main: `build.win.files`
   strips linux/darwin/arm64 onnxruntime binaries, `build.mac.files` strips
   linux/win32. Do not re-add platform excludes to the base `build.files`.
