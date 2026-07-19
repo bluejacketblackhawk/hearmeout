@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="../src/renderer/shared/theme.css">
+  <style>
+    /* The demo stage: an article being read, the real player pill, captions.
+       Driven frame-by-frame by stage.seek(t) from scripts/record-demo.js. */
+    html, body { width: 1200px; height: 750px; overflow: hidden; }
+    body { background: #1a1d21; position: relative; }
+
+    #page {
+      position: absolute;
+      inset: 44px 190px 96px 190px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 46px 58px;
+      opacity: 0;
+      transition: opacity 500ms ease;
+    }
+    #page.on { opacity: 1; }
+    #page h1 { font-size: 27px; margin-bottom: 7px; letter-spacing: -0.3px; }
+    #page .byline { color: var(--text-dim); font-size: 13px; margin-bottom: 24px; }
+    #page p { font-size: 18.5px; line-height: 1.75; color: var(--text); user-select: text; }
+    #page p + p { margin-top: 14px; }
+
+    .sel { border-radius: 3px; transition: background 120ms linear; }
+    .sel.hot { background: color-mix(in srgb, var(--accent) 32%, transparent); }
+    .sel.spoken { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+
+    /* The key chip ("press one key") */
+    #keychip {
+      position: absolute;
+      left: 50%; top: 300px;
+      transform: translateX(-50%) scale(0.8);
+      font-family: var(--mono);
+      font-size: 21px;
+      color: var(--text);
+      background: var(--bg-raised);
+      border: 1px solid var(--line);
+      border-bottom-width: 4px;
+      border-radius: 10px;
+      padding: 12px 26px;
+      opacity: 0;
+      transition: opacity 200ms ease, transform 200ms ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    #keychip.on { opacity: 1; transform: translateX(-50%) scale(1); }
+
+    /* The REAL player pill — same structure and styling as the product's
+       player window (player.css classes recreated against theme.css). */
+    #pill {
+      position: absolute;
+      left: 50%; bottom: -120px;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 12px;
+      width: 470px; height: 88px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+      transition: bottom 420ms cubic-bezier(0.2, 0.9, 0.3, 1.05);
+    }
+    #pill.on { bottom: 26px; }
+    #wave { display: flex; align-items: center; gap: 3px; height: 34px; flex: 0 0 auto; }
+    #wave span { width: 4px; height: 8px; border-radius: 2px; background: var(--accent); }
+    #wave.speaking span { animation: dance var(--dance, 900ms) ease-in-out infinite; }
+    #wave.speaking span:nth-child(1) { animation-delay: 0ms; }
+    #wave.speaking span:nth-child(2) { animation-delay: 150ms; }
+    #wave.speaking span:nth-child(3) { animation-delay: 300ms; }
+    #wave.speaking span:nth-child(4) { animation-delay: 120ms; }
+    #wave.speaking span:nth-child(5) { animation-delay: 260ms; }
+    @keyframes dance { 0%, 100% { height: 8px; } 50% { height: 30px; } }
+    #mid { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    #source { font-size: 12px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #line { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #progress { height: 3px; border-radius: 2px; background: var(--bg-inset); overflow: hidden; }
+    #progress-fill { height: 100%; width: 0%; background: var(--accent); }
+    #controls { display: flex; align-items: center; gap: 2px; flex: 0 0 auto; }
+    #controls .b {
+      font-size: 13px; color: var(--text-dim);
+      padding: 6px 9px; border-radius: 10px; border: 1px solid transparent;
+    }
+    #controls .b.primary { background: var(--accent); color: var(--accent-ink); font-weight: 600; width: 38px; text-align: center; }
+    #speedb { font-variant-numeric: tabular-nums; color: var(--text); }
+    #speedb.bump { border-color: var(--accent); color: var(--accent); }
+
+    /* Caption chip */
+    #cap {
+      position: absolute;
+      left: 50%; bottom: 130px;
+      transform: translateX(-50%);
+      font-size: 17px; font-weight: 600;
+      color: var(--accent-ink);
+      background: var(--accent);
+      border-radius: 999px;
+      padding: 9px 22px;
+      opacity: 0;
+      transition: opacity 250ms ease;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+      white-space: nowrap;
+    }
+    #cap.on { opacity: 1; }
+
+    /* End card */
+    #end {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+      background: var(--bg);
+      opacity: 0;
+      transition: opacity 450ms ease;
+    }
+    #end.on { opacity: 1; }
+    #end .mark { color: var(--accent); font-size: 54px; font-weight: 700; letter-spacing: -6px; }
+    #end .name { font-size: 30px; font-weight: 650; }
+    #end .tag { color: var(--text-dim); font-size: 16.5px; }
+    #end .url { font-family: var(--mono); color: var(--accent); font-size: 15px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div id="page">
+    <h1>The $139-a-year feature your computer already has</h1>
+    <div class="byline">weekend reading &middot; 4 min</div>
+    <p>Speechify charges $139 a year to read text out loud. NaturalReader wants $119. Both are fine products built on a premise that quietly expired: that a voice worth listening to has to live in someone else's cloud.</p>
+    <p><span class="sel" id="s1">The voice they rent you now runs free on the machine you already own.</span> <span class="sel" id="s2">Select anything, press one key, and listen &mdash; no cloud, no account, no subscription.</span></p>
+    <p>That's the whole pitch. The rest is just details, and the details are open source.</p>
+  </div>
+
+  <div id="keychip">F8</div>
+
+  <div id="pill">
+    <div id="wave"><span></span><span></span><span></span><span></span><span></span></div>
+    <div id="mid">
+      <div id="source">Reading from your browser</div>
+      <div id="line">&nbsp;</div>
+      <div id="progress"><div id="progress-fill"></div></div>
+    </div>
+    <div id="controls">
+      <div class="b">&#9198;</div>
+      <div class="b primary">&#10074;&#10074;</div>
+      <div class="b">&#9197;</div>
+      <div class="b" id="speedb">1&times;</div>
+      <div class="b">&#10005;</div>
+    </div>
+  </div>
+
+  <div id="cap"></div>
+
+  <div id="end">
+    <div class="mark">)))</div>
+    <div class="name">Hear Me Out</div>
+    <div class="tag">free &middot; open source &middot; offline &middot; yours</div>
+    <div class="url">github.com/bluejacketblackhawk/hearmeout</div>
+  </div>
+
+  <script>
+    'use strict';
+    /* Deterministic timeline: record-demo.js calls stage.seek(t) before every
+       frame grab, so the finished clip is identical run to run. */
+    (function () {
+      const $ = function (id) { return document.getElementById(id); };
+      const S1 = 'The voice they rent you now runs free on the machine you already own.';
+      const S2 = 'Select anything, press one key, and listen — no cloud, no account, no subscription.';
+
+      function between(t, a, b) { return t >= a && t < b; }
+
+      window.stage = {
+        seek: function (t) {
+          // Scene A: article + selection sweep (0 – 3.0)
+          $('page').classList.toggle('on', t >= 0.15);
+          const sweep = Math.max(0, Math.min(1, (t - 1.1) / 1.6));
+          $('s1').classList.toggle('hot', sweep > 0.05);
+          $('s2').classList.toggle('hot', sweep > 0.55);
+
+          // Scene B: the key (3.0 – 4.1)
+          $('keychip').classList.toggle('on', between(t, 3.0, 4.05));
+
+          // Scene C: pill up + speaking (4.1 – 13.2)
+          $('pill').classList.toggle('on', t >= 4.1);
+          const speaking = between(t, 4.55, 13.05);
+          $('wave').classList.toggle('speaking', speaking);
+
+          if (t < 8.6) {
+            $('line').textContent = S1;
+          } else {
+            $('line').textContent = S2;
+            $('s1').classList.remove('hot');
+            $('s1').classList.add('spoken');
+          }
+          if (t >= 13.05) { $('s2').classList.remove('hot'); $('s2').classList.add('spoken'); }
+
+          // progress across the speech window
+          const p = Math.max(0, Math.min(1, (t - 4.55) / 8.5));
+          $('progress-fill').style.width = (p * 100).toFixed(1) + '%';
+
+          // Scene D: speed clicks at 10.2 / 11.2 (1× → 1.5× → 2×)
+          const sb = $('speedb');
+          if (t < 10.2) { sb.innerHTML = '1&times;'; sb.classList.remove('bump'); document.body.style.setProperty('--dance', '900ms'); }
+          else if (t < 11.2) { sb.innerHTML = '1.5&times;'; sb.classList.add('bump'); document.body.style.setProperty('--dance', '620ms'); }
+          else { sb.innerHTML = '2&times;'; sb.classList.add('bump'); document.body.style.setProperty('--dance', '460ms'); }
+
+          // Captions
+          const cap = $('cap');
+          let text = '';
+          if (between(t, 1.1, 2.95)) text = 'select anything, anywhere';
+          else if (between(t, 3.0, 4.05)) text = 'press one key';
+          else if (between(t, 4.7, 9.9)) text = 'it reads. in a real voice. offline.';
+          else if (between(t, 10.25, 13.0)) text = '2× without the chipmunk';
+          cap.textContent = text || cap.textContent;
+          cap.classList.toggle('on', !!text);
+
+          // Scene E: end card (13.6 →)
+          $('end').classList.toggle('on', t >= 13.6);
+        },
+      };
+    })();
+  </script>
+</body>
+</html>

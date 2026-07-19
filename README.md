@@ -5,9 +5,9 @@
 Free, MIT-licensed, and 100% on your machine. No cloud, no account, no
 subscription, no telemetry. Turn Wi-Fi off — everything still works.
 
-![the floating player, mid-sentence](assets/screenshots/player-speaking.png)
+![select text, press a key, listen](assets/demo.gif)
 
-*Select text anywhere → press `F8` → this appears and reads to you.*
+*Select text anywhere → press `F8` → the player appears and reads to you.*
 
 ## Download
 
