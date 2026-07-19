@@ -71,9 +71,9 @@
       }
     ],
     "win": {
-      "target": "nsis",
+      "target": ["nsis", "zip"],
       "icon": "assets/HearMeOut.ico",
-      "artifactName": "HearMeOut-Setup-${version}.${ext}",
+      "artifactName": "HearMeOut-${version}-win.${ext}",
       "files": [
         "!node_modules/onnxruntime-node/bin/**/linux/**",
         "!node_modules/onnxruntime-node/bin/**/darwin/**",
@@ -84,7 +84,8 @@
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "shortcutName": "Hear Me Out"
+      "shortcutName": "Hear Me Out",
+      "artifactName": "HearMeOut-Setup-${version}.${ext}"
     },
     "mac": {
       "target": [
