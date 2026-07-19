@@ -58,6 +58,9 @@ never from the build tree alone.
 
 ## Rules
 
+- No betas, no pre-release flags, no release-candidate theater. Every release
+  is the real thing and we maintain as we go; if it is not ready to be the
+  real thing, it does not get a tag.
 - The draft is the handoff between lanes.
 - Windows artifacts are unsigned (README says so, and why). Mac artifacts
   must be Notarized Developer ID.
