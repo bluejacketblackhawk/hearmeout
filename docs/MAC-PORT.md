@@ -43,7 +43,9 @@ with deep links to System Settings panes.
   gated on `APPLE_API_KEY` (path to the App Store Connect .p8),
   `APPLE_API_KEY_ID`, `APPLE_API_ISSUER` — without them the hook steps aside
   and the unsigned-era `xattr -dr com.apple.quarantine` instructions still
-  apply to what comes out.
+  apply to what comes out. With them, electron-builder notarizes and the
+  hook staples (ticket Accepted + `spctl` "Notarized Developer ID" verified
+  2026-07-18, both arches).
 - Packaging excludes are ALREADY platform-scoped on main: `build.win.files`
   strips linux/darwin/arm64 onnxruntime binaries, `build.mac.files` strips
   linux/win32. Do not re-add platform excludes to the base `build.files`.

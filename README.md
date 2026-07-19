@@ -16,10 +16,10 @@ Grab the latest build from
 Windows installer or portable zip, macOS `.dmg` or `.zip` (Apple Silicon
 and Intel).
 
-> Both platforms will warn about unsigned builds (code-signing certificates
-> cost money this project doesn't charge for). Windows: click "More info" →
-> "Run anyway". macOS: if Gatekeeper balks, clear the quarantine flag once —
-> `xattr -dr com.apple.quarantine "/Applications/Hear Me Out.app"`.
+> Windows will warn about an unsigned installer (code-signing certificates
+> cost money this project doesn't charge for). Click "More info" → "Run
+> anyway", or use the portable zip. The macOS builds are signed and
+> notarized — drag to Applications and open, no warnings.
 
 On macOS the welcome screen walks you through the two permissions the gesture
 needs: Input Monitoring (hear the hotkey) and Accessibility (grab the
@@ -105,7 +105,6 @@ it speak end-to-end, `npm run dist` builds the installer.
 
 ## Roadmap
 
-- Signed + notarized macOS builds (today: unsigned, clear quarantine once)
 - EPUB and PDF import in the reader
 - Word-level highlight (currently sentence-level)
 - MP3/M4B export, chapter files
