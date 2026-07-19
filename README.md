@@ -105,6 +105,10 @@ it speak end-to-end, `npm run dist` builds the installer.
 
 ## Roadmap
 
+- Move synthesis off the main process — on some machines the very first press
+  after a cold start can briefly freeze the windows while the voice warms up,
+  then never again; a background worker ends it for good
+- Slim the Windows package (sharp's image stack rides along unused)
 - EPUB and PDF import in the reader
 - Word-level highlight (currently sentence-level)
 - MP3/M4B export, chapter files
